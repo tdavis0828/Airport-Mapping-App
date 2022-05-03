@@ -1,9 +1,12 @@
 import "./App.css";
+import List from "./components/List";
+import Maps from "./components/Maps"
 
 function App() {
   return (
     <div className="App">
-      <h1>App Goes Here</h1>
+      <List />
+      <Maps />
     </div>
   );
 }
