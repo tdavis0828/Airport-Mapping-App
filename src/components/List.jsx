@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import airports from "../airports.json";
+import MyMap from "./Map";
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 
@@ -76,7 +77,7 @@ const List = () => {
       const airportInfo = await res.json();
 
       let airportData = [];
-      console.log(airportInfo);
+      // console.log(airportInfo);
       for (const key in airportInfo) {
         if (airportInfo[key].length) {
           const {
@@ -108,7 +109,7 @@ const List = () => {
   return (
     <Wrapper>
       <Map>
-        <p>Map goes here</p>
+        <MyMap height={600} />
       </Map>
       <Section>
         {airportsData.map((airports) => (
@@ -119,7 +120,7 @@ const List = () => {
               {airports.state_full}
             </p>
             <p>
-              <i class="fa-solid fa-phone"></i> {airports.manager_phone}
+              <i className="fa-solid fa-phone"></i> {airports.manager_phone}
             </p>
             {airports.status === "O" ? "Currently Open" : "Currently Closed"}
           </Card>
