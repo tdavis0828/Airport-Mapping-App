@@ -1,115 +1,136 @@
+import styled from "styled-components";
 import airports from "../airports.json";
+import MyMap from "./Maps";
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import { Map, Overlay } from "pigeon-maps"
-import Airport from "../components/Airport_Pin.png"
+import { nanoid } from "nanoid";
 
+const Wrapper = styled.div`
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
+const Map = styled.div`
+  width: 1500px;
+  height: 65vh;
+  border: 1px solid #000;
+  border-radius: 5px 0px 0px 5px;
+  margin-left: 1rem;
+`;
+
+const Section = styled.section`
+  width: 400px;
+  height: 60vh;
+  color: #fff;
+  scroll-behavior: smooth;
+  overflow: scroll;
+  overflow-x: hidden;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0px 5px 5px 0px;
+  padding: 1.3rem;
+  margin-right: 1.2rem;
+`;
+
+const Card = styled.div`
+  font-family: "Montserrat", sans-serif;
+  font-weight: 300;
+  background: #fff;
+  height: 150px;
+  width: 100%;
+  color: #000;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  &-p {
+    &-i {
+      padding-right: 1rem;
+    }
+  }
+`;
 
 const List = () => {
-const [lati, setLati] = useState([])
-const [long, setLong] = useState([])
+  const navigate = useNavigate();
+  const [airportsData, setAirportsData] = useState([]);
 
-  useEffect(() => {
-   const usAirports = airports.filter((airport) =>
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const getCodes = () => {
+    const usAirports = airports.filter((airport) =>
       airport.country.includes("United States")
     );
     const filteredAirports = usAirports.filter(
       (airport) => airport.runway_length > 12000
     );
-    let lon = [];
-    let lat = [];
+    let codes = [];
     for (const airports of filteredAirports) {
-      lon.push(airports.lon);
-      lat.push(airports.lat);
-      setLati(lat.map(num => Number(num)));
-      setLong(lon.map(num => Number(num)))
+      codes.push(airports.code);
     }
-   
+    return codes;
+  };
 
-  }, [])
-  console.log(long);
-  console.log(lati)
+  useEffect(() => {
+    const getData = async () => {
+      const res = await fetch(
+        `https://api.aviationapi.com/v1/airports?apt=${getCodes()}`
+      );
+      const airportInfo = await res.json();
 
-  
+      let airportData = [];
+      // console.log(airportInfo);
+      for (const key in airportInfo) {
+        if (airportInfo[key].length) {
+          const {
+            city,
+            facility_name,
+            county,
+            state_full,
+            manager,
+            status,
+            manager_phone,
+          } = airportInfo[key][0];
 
-  const arrCoordinates = [lati, long];
-
-  const MultipleMarkers = () => {
-  return arrCoordinates.map((coordinata, index) => {
-    return <Overlay key={index} anchor={coordinata}>
-      <img src={Airport} width={50} height={50} alt='' />
-    </Overlay>;
-  });
-}
-  
-
-  // const getData = async () => {
-  //   const res = await fetch(
-  //     `https://api.aviationapi.com/v1/airports?apt=${getCodes()}`
-  //   );
-  //   const airportInfo = await res.json();
-
-  //   let airportData = [];
-  //   console.log(airportInfo);
-  //   for (const key in airportInfo) {
-  //     if (airportInfo[key].length) {
-  //       const {
-  //         city,
-  //         facility_name,
-  //         county,
-  //         state_full,
-  //         manager,
-  //         latitude,
-  //         longitude,
-  //         status,
-  //       } = airportInfo[key][0];
-
-  //       airportData.push({
-  //         facility_name,
-  //         city,
-  //         county,
-  //         state_full,
-  //         manager,
-  //         latitude,
-  //         longitude,
-  //         status,
-  //       });
-
-  //       console.log(
-  //         `Airport Name: ${facility_name}`,
-  //         `City: ${city}`,
-  //         `State: ${state_full}`,
-  //         `County: ${county}`,
-  //         `Current Manager: ${manager}`,
-  //         `Latitude: ${latitude}`,
-  //         `Longitude: ${longitude}`,
-  //         `Current Status: ${status}`
-  //       );
-  //     }
-  //   }
-  //   console.log(airportData);
-  // };
-  // getData();
-
-
-
-  
+          airportData.push({
+            facility_name,
+            city,
+            county,
+            state_full,
+            manager,
+            status,
+            manager_phone,
+          });
+        }
+      }
+      setAirportsData(airportData);
+    };
+    getData();
+  }, []);
 
   return (
-    <div>
-      {/* <p>{lati}</p>
-      <p>{long}</p> */}
-      {/* <p>{latitude}</p>
-      <p>{longitude}</p> */}
-    
-      <Map height={600} width={1000} defaultCenter={[lati, long]} defaultZoom={11}>
-      <MultipleMarkers />
-       
-    </Map> 
+    <Wrapper>
+      <Map>
+        <MyMap height={600} />
+      </Map>
+      <Section>
+        {airportsData.map((airports) => (
 
-    </div>
+          <Card id={nanoid()} onClick={() => navigate('/InfoPage')}>
+            <h3>{airports.facility_name}</h3>
+            <p>
+              <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
+              {airports.state_full}
+            </p>
+            <p>
+              <i className="fa-solid fa-phone"></i> {airports.manager_phone}
+            </p>
+            {airports.status === "O" ? "Currently Open" : "Currently Closed"}
+          </Card>
+        ))}
+      </Section>
+    </Wrapper>
   );
-  
 };
 
 export default List;

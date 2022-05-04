@@ -1,18 +1,45 @@
-import React from "react"
-import { Map, Overlay } from "pigeon-maps"
-import Airport from "../components/Airport_Pin.png"
+import { Map, Marker } from "pigeon-maps";
+import airports from "../airports.json";
+import { useState, useEffect } from "react";
 
-export function Maps() {
+const MyMap = (props) => {
+  const [latLon, setLatLon] = useState([]);
+
+  useEffect(() => {
+    const getLatLon = () => {
+      const usAirports = airports.filter((airport) =>
+        airport.country.includes("United States")
+      );
+      const filteredAirports = usAirports.filter(
+        (airport) => airport.runway_length > 12000
+      );
+
+      let latLon = [];
+
+      for (const airports of filteredAirports) {
+        let latLongValues = [airports.lat, airports.lon];
+        latLon.push(latLongValues);
+      }
+      setLatLon(latLon);
+    };
+    getLatLon();
+  }, []);
+
+  console.log(latLon);
   return (
-    <Map height={600} width={1000} defaultCenter={[33.9456, -118.391]} defaultZoom={11}>
-        <Overlay anchor={[33.9456, -118.391]} offset={[0, 50]}>
-            <img src={Airport} width={50} height={50} alt='' />
-        </Overlay>
-        <Overlay anchor={[32.7299, -117.195]} offset={[0, 50]}>
-            <img src={Airport} width={50} height={50} alt='' />
-        </Overlay>
+    <Map
+      height={props.height}
+      defaultCenter={[38.500000, -98.000000]}
+      defaultZoom={11}
+    >
+      {latLon.map((value) => (
+        <Marker
+          width={50}
+          anchor={[parseFloat(value[0]), parseFloat(value[1])]}
+        />
+      ))}
     </Map>
-  )
-}
+  );
+};
 
-export default Maps;
+export default MyMap;

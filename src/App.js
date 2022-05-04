@@ -1,14 +1,15 @@
 import "./App.css";
-import List from "./components/List";
-import Maps from "./components/Maps"
+import Home from "./pages/Home";
+import About from "./pages/About";
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
-  return (
-    <div className="App">
-      <List />
-      <Maps />
-    </div>
+  return ( 
+   <Routes> 
+     <Route index element={<Home />} />
+     <Route path="InfoPage" element={<About />} />
+    </Routes>
   );
-}
+};
 
 export default App;
