@@ -1,59 +1,37 @@
 import styled from "styled-components";
 import airports from "../airports.json";
-import MyMap from "./Map";
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 
-const Wrapper = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Map = styled.div`
-  width: 1500px;
-  height: 65vh;
-  border: 1px solid #000;
-  border-radius: 5px 0px 0px 5px;
-  margin-left: 1rem;
-`;
-
 const Section = styled.section`
-  width: 400px;
-  height: 60vh;
+  width: 500px;
+  height: 65vh;
   color: #fff;
   scroll-behavior: smooth;
   overflow: scroll;
   overflow-x: hidden;
   border: 2px solid rgba(0, 0, 0, 0.3);
   border-radius: 0px 5px 5px 0px;
-  padding: 1.3rem;
-  margin-right: 1.2rem;
+  margin-right: 2rem;
 `;
 
 const Card = styled.div`
   font-family: "Montserrat", sans-serif;
   font-weight: 300;
   background: #fff;
-  height: 150px;
+  height: 175px;
   width: 100%;
   color: #000;
+  padding: 0.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  &-p {
-    &-i {
-      padding-right: 1rem;
-    }
+  cursor: pointer;
+  &.active {
+    background: rgba(0, 0, 0, 0.2);
   }
 `;
 
-const List = () => {
+const List = (props) => {
   const [airportsData, setAirportsData] = useState([]);
-
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
 
   const getCodes = () => {
     const usAirports = airports.filter((airport) =>
@@ -75,9 +53,8 @@ const List = () => {
         `https://api.aviationapi.com/v1/airports?apt=${getCodes()}`
       );
       const airportInfo = await res.json();
-
-      let airportData = [];
       // console.log(airportInfo);
+      let airportData = [];
       for (const key in airportInfo) {
         if (airportInfo[key].length) {
           const {
@@ -88,6 +65,7 @@ const List = () => {
             manager,
             status,
             manager_phone,
+            faa_ident,
           } = airportInfo[key][0];
 
           airportData.push({
@@ -98,6 +76,7 @@ const List = () => {
             manager,
             status,
             manager_phone,
+            faa_ident,
           });
         }
       }
@@ -107,14 +86,16 @@ const List = () => {
   }, []);
 
   return (
-    <Wrapper>
-      <Map>
-        <MyMap height={600} />
-      </Map>
-      <Section>
-        {airportsData.map((airports) => (
-          <Card id={nanoid()}>
-            <h3>{airports.facility_name}</h3>
+    <Section>
+      {airportsData === null ? (
+        <i className="fa-solid fa-spinner"></i>
+      ) : (
+        airportsData.map((airports) => (
+          <Card
+            key={nanoid()}
+            className={props.data[2] === airports.faa_ident ? "active" : ""}
+          >
+            <p>{airports.facility_name}</p>
             <p>
               <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
               {airports.state_full}
@@ -124,9 +105,9 @@ const List = () => {
             </p>
             {airports.status === "O" ? "Currently Open" : "Currently Closed"}
           </Card>
-        ))}
-      </Section>
-    </Wrapper>
+        ))
+      )}
+    </Section>
   );
 };
 
