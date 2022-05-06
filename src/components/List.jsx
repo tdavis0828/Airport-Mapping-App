@@ -1,7 +1,8 @@
 import styled from "styled-components";
+import React from 'react';
 import airports from "../airports.json";
 import MyMap from "./Maps";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 
@@ -50,6 +51,7 @@ const Card = styled.div`
 `;
 
 const List = () => {
+
   const navigate = useNavigate();
   const [airportsData, setAirportsData] = useState([]);
 
@@ -78,6 +80,7 @@ const List = () => {
       );
       const airportInfo = await res.json();
 
+      console.log(airportInfo)
       let airportData = [];
       // console.log(airportInfo);
       for (const key in airportInfo) {
@@ -90,6 +93,7 @@ const List = () => {
             manager,
             status,
             manager_phone,
+            faa_ident
           } = airportInfo[key][0];
 
           airportData.push({
@@ -100,13 +104,21 @@ const List = () => {
             manager,
             status,
             manager_phone,
-          });
+            faa_ident         
+           });
+           
         }
       }
       setAirportsData(airportData);
+      
+      return { airportsData, res };
     };
+   
     getData();
+     
   }, []);
+
+  
 
   return (
     <Wrapper>
@@ -114,19 +126,21 @@ const List = () => {
         <MyMap height={600} />
       </Map>
       <Section>
+        
         {airportsData.map((airports) => (
-
-          <Card id={nanoid()} onClick={() => navigate('/InfoPage')}>
-            <h3>{airports.facility_name}</h3>
-            <p>
-              <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
-              {airports.state_full}
-            </p>
-            <p>
-              <i className="fa-solid fa-phone"></i> {airports.manager_phone}
-            </p>
-            {airports.status === "O" ? "Currently Open" : "Currently Closed"}
-          </Card>
+          // <Link to={`/InfoPage/${airports.faa_ident}`}>
+            <Card id={nanoid()}  onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}>
+              <h3>{airports.facility_name}</h3>
+              <p>
+                <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
+                {airports.state_full}
+              </p>
+              <p>
+                <i className="fa-solid fa-phone"></i> {airports.manager_phone}
+              </p>
+              {airports.status === "O" ? "Currently Open" : "Currently Closed"}
+            </Card>
+          // </Link>
         ))}
       </Section>
     </Wrapper>

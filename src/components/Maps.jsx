@@ -1,3 +1,4 @@
+import React from 'react';
 import { Map, Marker } from "pigeon-maps";
 import airports from "../airports.json";
 import { useState, useEffect } from "react";
