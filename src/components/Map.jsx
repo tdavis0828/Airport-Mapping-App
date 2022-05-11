@@ -1,6 +1,6 @@
 import { Map, Marker } from "pigeon-maps";
 import airports from "../airports.json";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { nanoid } from "nanoid";
 import styled from "styled-components";
 import List from "./List";
@@ -25,12 +25,20 @@ const Input = styled.input`
   font-size: 1.1rem;
   font-family: "Montserrat", sans-serif;
   font-weight: 300;
+  &:focus {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+  }
 `;
 
 const MyMap = (props) => {
+  const scrollRef = useRef();
+
   const [latLon, setLatLon] = useState([]);
   const [markerInfo, setMarkerInfo] = useState([]);
   const [filteredAirports, setFilteredAirports] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchValues, setSearchValues] = useState([]);
+  const [listData, setListData] = useState([]);
 
   useEffect(() => {
     const getLatLon = () => {
@@ -42,21 +50,31 @@ const MyMap = (props) => {
       );
 
       let latLon = [];
-
+      let searchValuesArr = [];
       for (const airports of filteredAirports) {
         let latLongValues = [airports.lat, airports.lon, airports.code];
+        let searchValues = [...latLongValues, airports.city, airports.state];
+        searchValuesArr.push(searchValues);
         latLon.push(latLongValues);
       }
-
+      setSearchValues(searchValuesArr);
       setLatLon(latLon);
-      setFilteredAirports(filteredAirports);
     };
     getLatLon();
   }, []);
 
-  const filterItems = (e) => {
-    console.log(filteredAirports);
-  };
+  useEffect(() => {
+    let filtered = [];
+    for (const key of searchValues) {
+      if (
+        key[4].toUpperCase().includes(searchTerm.toUpperCase()) ||
+        key[3].toUpperCase().includes(searchTerm.toUpperCase())
+      ) {
+        filtered.push(key);
+      }
+    }
+    setFilteredAirports(filtered);
+  }, [searchTerm]);
 
   return (
     <>
@@ -66,24 +84,40 @@ const MyMap = (props) => {
           defaultCenter={[33.9862, -98.4984]}
           defaultZoom={4.2}
         >
-          {latLon.map((value) => (
-            <Marker
-              key={nanoid()}
-              width={35}
-              anchor={[parseFloat(value[0]), parseFloat(value[1])]}
-              onClick={() => {
-                setMarkerInfo(value);
-              }}
-            />
-          ))}
+          {filteredAirports === ""
+            ? latLon.map((value) => (
+                <Marker
+                  key={nanoid()}
+                  width={35}
+                  anchor={[parseFloat(value[0]), parseFloat(value[1])]}
+                  onClick={() => {
+                    setMarkerInfo(value);
+                  }}
+                />
+              ))
+            : filteredAirports.map((value) => (
+                <Marker
+                  key={nanoid()}
+                  width={35}
+                  anchor={[parseFloat(value[0]), parseFloat(value[1])]}
+                  onClick={() => {
+                    setMarkerInfo(value);
+                    scrollRef.current?.scrollIntoView();
+                  }}
+                />
+              ))}
         </Map>
+
         <Input
           type="text"
-          onChange={(e) => filterItems(e)}
-          placeholder="City, State, Airport Code ex: LAX"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="City, State"
         />
       </MapStyles>
-      <List data={markerInfo} />
+      <List
+        refProps={scrollRef}
+        data={[markerInfo, latLon, filteredAirports]}
+      />
     </>
   );
 };
