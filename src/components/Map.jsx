@@ -38,20 +38,17 @@ const MyMap = (props) => {
   const [filteredAirports, setFilteredAirports] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchValues, setSearchValues] = useState([]);
-  const [listData, setListData] = useState([]);
-
   useEffect(() => {
     const getLatLon = () => {
-      const usAirports = airports.filter((airport) =>
-        airport.country.includes("United States")
-      );
-      const filteredAirports = usAirports.filter(
-        (airport) => airport.runway_length > 12000
+      const usAirports = airports.filter(
+        (airport) =>
+          airport.country.includes("United States") ||
+          airport.runway_length > 12000
       );
 
       let latLon = [];
       let searchValuesArr = [];
-      for (const airports of filteredAirports) {
+      for (const airports of usAirports) {
         let latLongValues = [airports.lat, airports.lon, airports.code];
         let searchValues = [...latLongValues, airports.city, airports.state];
         searchValuesArr.push(searchValues);
@@ -76,6 +73,10 @@ const MyMap = (props) => {
     setFilteredAirports(filtered);
   }, [searchTerm]);
 
+  // const scrollElement = () => {
+  //   scrollRef.current.scrollIntoView();
+  // };
+
   return (
     <>
       <MapStyles>
@@ -84,7 +85,7 @@ const MyMap = (props) => {
           defaultCenter={[33.9862, -98.4984]}
           defaultZoom={4.2}
         >
-          {filteredAirports === ""
+          {filteredAirports === []
             ? latLon.map((value) => (
                 <Marker
                   key={nanoid()}
@@ -95,14 +96,14 @@ const MyMap = (props) => {
                   }}
                 />
               ))
-            : filteredAirports.map((value) => (
+            : filteredAirports.map((value, i) => (
                 <Marker
                   key={nanoid()}
                   width={35}
                   anchor={[parseFloat(value[0]), parseFloat(value[1])]}
                   onClick={() => {
                     setMarkerInfo(value);
-                    scrollRef.current?.scrollIntoView();
+                    scrollRef.current.scrollIntoView();
                   }}
                 />
               ))}
@@ -114,10 +115,7 @@ const MyMap = (props) => {
           placeholder="City, State"
         />
       </MapStyles>
-      <List
-        refProps={scrollRef}
-        data={[markerInfo, latLon, filteredAirports]}
-      />
+      <List refProp={scrollRef} data={[markerInfo, latLon, filteredAirports]} />
     </>
   );
 };

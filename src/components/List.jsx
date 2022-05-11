@@ -30,9 +30,9 @@ const Card = styled.div`
 `;
 
 const List = (props) => {
-  console.log(props);
   const [airportsData, setAirportsData] = useState([]);
   const [apCodes, setApCodes] = useState([]);
+  // console.log(props.refProp);
   useEffect(() => {
     const getCodes = () => {
       let codes = [];
@@ -51,6 +51,7 @@ const List = (props) => {
         `https://api.aviationapi.com/v1/airports?apt=${apCodes}`
       );
       const airportInfo = await res.json();
+      console.log(airportInfo);
       let airportData = [];
       let filteredAirportData = [];
 
@@ -88,8 +89,9 @@ const List = (props) => {
 
   return (
     <Section>
-      {airportsData.map((airports) => (
+      {airportsData.map((airports, i) => (
         <Card
+          ref={props.data[0][2] === airports.faa_ident ? props.refProp : null}
           key={nanoid()}
           className={props.data[0][2] === airports.faa_ident ? "active" : ""}
         >
