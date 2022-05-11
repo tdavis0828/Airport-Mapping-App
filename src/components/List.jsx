@@ -3,7 +3,7 @@ import React from 'react';
 import airports from "../airports.json";
 import MyMap from "./Maps";
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { nanoid } from "nanoid";
 
 const Wrapper = styled.div`

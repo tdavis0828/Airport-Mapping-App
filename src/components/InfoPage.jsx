@@ -3,50 +3,77 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { getAirports } from '../utils/API';
 import styled, {createGlobalStyle} from 'styled-components';
-import plane from './IMGs/plane.jpg'
-
+import plane from './IMGs/plane.jpg';
+import airport from './IMGs/airport.jpg';
 
 const Body  = createGlobalStyle`
     body{
         background-color: #D9D1CE;
+        font-family: 'Courier Prime';
     }
 `;
 
 const Wrapper = styled.section`
-    text-transform: lowercase;
+        p {
+            color: #555;
+            font-size: 13px;
+        }
         h1::first-line {
             text-transform: capitalize;
         }
         p::first-line {
             text-transform: capitalize;
         }
-        div{
-            
-            display: flex;
+
+        div {
             background-color: white;
-            min-height: 800px;
-            max-width: 75%;
-            margin-left: 7%;
+            max-height: 80%;
+            max-width: 80%;
+            padding: 2%;
+            display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-                h3{
-                    text-trasform: uppercase;
-                    border: solid 1px red;
+            box-shadow: 12px 0 15px -4px rgba(31, 73, 125, 0.8), -12px 0 8px -4px rgba(31, 73, 125, 0.8); 
+            
+            img {
+                width: 100%;
+                height: 400px;
+                margin: 2%;
+            }
+                div {
+                   margin-left: 35%;
+                   border: solid red 1px;
+                    
+                }
+                h1 {
+                    font-size: 35px;
+                }
+        
+                h2 {
+                    text-transform: capitalize;
                 }
                 ul{
+                    
                     text-transform: lowercase;
+                    color: #555;
+                    padding-left: 0px;
+                    font-size: 13px;
+                    line-height: 3;
                         li::first-line {
                             text-transform: capitalize;
                         }
                 }
         }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: lowercase;
     text-align: center;
     background-image: url(${plane});
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    background-size: 100% auto;
+    background-size: 100% 100%;
     min-height: 800px;
     max-width: 70%;
     margin-top: 2%;
@@ -55,12 +82,19 @@ const Wrapper = styled.section`
 `;
 
 const Button =styled.button`
-    height: 30px;
     padding: 5px;
     border-radius: 4px;
     border: solid 1px;
+    // align-self: end;
+    // margin-left: 7%;
 `;
 
+const Text = styled.section`
+    text-align: center;;
+        ul {
+            list-style-type: none;
+        }
+`
 
 
 
@@ -83,19 +117,20 @@ const InfoPage = () => {
             <Body />
             <Wrapper>
                 <div>
-                  
+                    <img src={airport} alt="airport picture" />
+                    <Text>
                     <h1>{facility_name}</h1>
-                    <h3>{faa_ident}</h3>
                     <p>{facility_name} is located in {city}, {state_full} {county} </p>
+                    <h2>Our Facilty Info:</h2>
                     <ul>
-                         <h2>Our Facilty Info:</h2>
-                        <li>manager: {manager} manager phone: {manager_phone}</li>
+                        <li>manager: {manager} manager </li>
+                        <li>phone: {manager_phone}</li>
                         <li>status of our facility: {status}</li>
                         <li>military landing availability: {military_landing}</li>
                         <li>control tower status: {control_tower}</li>
                         
                     </ul>
-                    
+                    </Text>
                     <Button type="button" onClick={() => navigate('/')}>Back <i class="fa fa-plane"></i></Button>
                 </div>
             </Wrapper>
