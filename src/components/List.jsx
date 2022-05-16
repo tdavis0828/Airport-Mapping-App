@@ -25,25 +25,24 @@ const Card = styled.div`
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   cursor: pointer;
   &.active {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
   }
 `;
 
-const List = (props) => {
+const List = ({ refProp, markerInfo, airports }) => {
   const [airportsData, setAirportsData] = useState([]);
   const [apCodes, setApCodes] = useState([]);
-  // console.log(props.refProp);
+
   useEffect(() => {
     const getCodes = () => {
       let codes = [];
-      for (const key of props.data[2]) {
+      for (const key of airports) {
         codes.push(key[2]);
       }
       setApCodes(codes);
-      return codes;
     };
     getCodes();
-  }, [props]);
+  }, [airports]);
 
   useEffect(() => {
     const getData = async () => {
@@ -51,7 +50,6 @@ const List = (props) => {
         `https://api.aviationapi.com/v1/airports?apt=${apCodes}`
       );
       const airportInfo = await res.json();
-      console.log(airportInfo);
       let airportData = [];
       let filteredAirportData = [];
 
@@ -89,11 +87,11 @@ const List = (props) => {
 
   return (
     <Section>
-      {airportsData.map((airports, i) => (
+      {airportsData.map((airports) => (
         <Card
-          ref={props.data[0][2] === airports.faa_ident ? props.refProp : null}
+          ref={markerInfo[2] === airports.faa_ident ? refProp : null}
           key={nanoid()}
-          className={props.data[0][2] === airports.faa_ident ? "active" : ""}
+          className={markerInfo[2] === airports.faa_ident ? "active" : ""}
         >
           <p>{airports.facility_name}</p>
           <p>

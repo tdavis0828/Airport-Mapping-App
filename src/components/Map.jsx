@@ -30,34 +30,35 @@ const Input = styled.input`
   }
 `;
 
-const MyMap = (props) => {
+const MyMap = () => {
   const scrollRef = useRef();
 
-  const [latLon, setLatLon] = useState([]);
-  const [markerInfo, setMarkerInfo] = useState([]);
+  const [unfilteredAirports, setunfilteredAirports] = useState([]);
   const [filteredAirports, setFilteredAirports] = useState([]);
+  const [markerInfo, setMarkerInfo] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchValues, setSearchValues] = useState([]);
+
   useEffect(() => {
-    const getLatLon = () => {
+    const filterAirportInfo = () => {
       const usAirports = airports.filter(
         (airport) =>
-          airport.country.includes("United States") ||
+          airport.country.includes("United States") &&
           airport.runway_length > 12000
       );
 
-      let latLon = [];
+      let unfiltered = [];
       let searchValuesArr = [];
       for (const airports of usAirports) {
-        let latLongValues = [airports.lat, airports.lon, airports.code];
-        let searchValues = [...latLongValues, airports.city, airports.state];
+        let unfilteredValues = [airports.lat, airports.lon, airports.code];
+        let searchValues = [...unfilteredValues, airports.city, airports.state];
         searchValuesArr.push(searchValues);
-        latLon.push(latLongValues);
+        unfiltered.push(unfilteredValues);
       }
       setSearchValues(searchValuesArr);
-      setLatLon(latLon);
+      setunfilteredAirports(unfiltered);
     };
-    getLatLon();
+    filterAirportInfo();
   }, []);
 
   useEffect(() => {
@@ -73,37 +74,34 @@ const MyMap = (props) => {
     setFilteredAirports(filtered);
   }, [searchTerm]);
 
-  // const scrollElement = () => {
-  //   scrollRef.current.scrollIntoView();
-  // };
-
   return (
     <>
       <MapStyles>
-        <Map
-          height={props.height}
-          defaultCenter={[33.9862, -98.4984]}
-          defaultZoom={4.2}
-        >
+        <Map defaultCenter={[33.9862, -98.4984]} defaultZoom={4.2}>
           {filteredAirports === []
-            ? latLon.map((value) => (
+            ? unfilteredAirports.map((value) => (
                 <Marker
                   key={nanoid()}
                   width={35}
                   anchor={[parseFloat(value[0]), parseFloat(value[1])]}
                   onClick={() => {
                     setMarkerInfo(value);
+                    setTimeout(() => {
+                      scrollRef.current.scrollIntoView();
+                    }, 0);
                   }}
                 />
               ))
-            : filteredAirports.map((value, i) => (
+            : filteredAirports.map((value) => (
                 <Marker
                   key={nanoid()}
                   width={35}
                   anchor={[parseFloat(value[0]), parseFloat(value[1])]}
                   onClick={() => {
                     setMarkerInfo(value);
-                    scrollRef.current.scrollIntoView();
+                    setTimeout(() => {
+                      scrollRef.current.scrollIntoView();
+                    }, 0);
                   }}
                 />
               ))}
@@ -115,7 +113,11 @@ const MyMap = (props) => {
           placeholder="City, State"
         />
       </MapStyles>
-      <List refProp={scrollRef} data={[markerInfo, latLon, filteredAirports]} />
+      <List
+        refProp={scrollRef}
+        markerInfo={markerInfo}
+        airports={filteredAirports}
+      />
     </>
   );
 };
