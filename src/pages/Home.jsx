@@ -1,11 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import List from '../components/List'
+import Map from '../components/Map'
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const Home = () => {
     return (
         <main>
-            <List />
+            <Header />
+            <Map />
+            <Footer />
+
         </main>
     );
 };

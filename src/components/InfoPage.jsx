@@ -10,6 +10,8 @@ const Body  = createGlobalStyle`
     body{
         background-color: #D9D1CE;
         font-family: 'Courier Prime';
+        margin-left: 0px;
+        margin-right: 0px;
     }
 `;
 
@@ -27,7 +29,7 @@ const Wrapper = styled.section`
 
         div {
             background-color: white;
-            max-height: 80%;
+            max-height: 90%;
             max-width: 80%;
             padding: 2%;
             display: flex;
@@ -37,7 +39,7 @@ const Wrapper = styled.section`
             
             img {
                 width: 100%;
-                height: 400px;
+                height: 350px;
                 margin: 2%;
             }
                 div {
@@ -76,12 +78,12 @@ const Wrapper = styled.section`
     background-size: 100% 100%;
     min-height: 800px;
     max-width: 70%;
-    margin-top: 2%;
+    margin-top: 4%;
     margin-left: 16%;
     box-shadow: 20px 15px 50px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 `;
 
-const Button =styled.button`
+const Button = styled.button`
     padding: 5px;
     border-radius: 4px;
     border: solid 1px;
@@ -94,6 +96,7 @@ const Text = styled.section`
         ul {
             list-style-type: none;
         }
+        
 `
 
 
@@ -131,7 +134,7 @@ const InfoPage = () => {
                         
                     </ul>
                     </Text>
-                    <Button type="button" onClick={() => navigate('/')}>Back <i class="fa fa-plane"></i></Button>
+                    {/* <Button type="button" onClick={() => navigate('/')}>Back <i class="fa fa-plane"></i></Button> */}
                 </div>
             </Wrapper>
        </main>

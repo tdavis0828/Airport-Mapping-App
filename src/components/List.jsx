@@ -1,88 +1,63 @@
 import styled from "styled-components";
 import React from 'react';
 import airports from "../airports.json";
-import MyMap from "./Maps";
+import MyMap from "./Map";
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from "react";
 import { nanoid } from "nanoid";
 
-const Wrapper = styled.div`
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Map = styled.div`
-  width: 1500px;
-  height: 65vh;
-  border: 1px solid #000;
-  border-radius: 5px 0px 0px 5px;
-  margin-left: 1rem;
-`;
-
 const Section = styled.section`
-  width: 400px;
-  height: 60vh;
+  width: 500px;
+  height: 65vh;
   color: #fff;
   scroll-behavior: smooth;
   overflow: scroll;
   overflow-x: hidden;
   border: 2px solid rgba(0, 0, 0, 0.3);
   border-radius: 0px 5px 5px 0px;
-  padding: 1.3rem;
-  margin-right: 1.2rem;
+  margin-right: 2rem;
 `;
 
 const Card = styled.div`
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Courier Prime';
   font-weight: 300;
   background: #fff;
-  height: 150px;
+  height: 175px;
   width: 100%;
   color: #000;
+  padding: 0.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  &-p {
-    &-i {
-      padding-right: 1rem;
-    }
+  cursor: pointer;
+  &.active {
+    background: rgba(0, 0, 0, 0.3);
   }
 `;
 
-const List = () => {
-
+const List = ({ refProp, markerInfo, airports }) => {
   const navigate = useNavigate();
   const [airportsData, setAirportsData] = useState([]);
+  const [apCodes, setApCodes] = useState([]);
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
-
-  const getCodes = () => {
-    const usAirports = airports.filter((airport) =>
-      airport.country.includes("United States")
-    );
-    const filteredAirports = usAirports.filter(
-      (airport) => airport.runway_length > 12000
-    );
-    let codes = [];
-    for (const airports of filteredAirports) {
-      codes.push(airports.code);
-    }
-    return codes;
-  };
+  useEffect(() => {
+    const getCodes = () => {
+      let codes = [];
+      for (const key of airports) {
+        codes.push(key[2]);
+      }
+      setApCodes(codes);
+    };
+    getCodes();
+  }, [airports]);
 
   useEffect(() => {
     const getData = async () => {
       const res = await fetch(
-        `https://api.aviationapi.com/v1/airports?apt=${getCodes()}`
+        `https://api.aviationapi.com/v1/airports?apt=${apCodes}`
       );
       const airportInfo = await res.json();
-
-      console.log(airportInfo)
       let airportData = [];
-      // console.log(airportInfo);
+      let filteredAirportData = [];
+
       for (const key in airportInfo) {
         if (airportInfo[key].length) {
           const {
@@ -93,9 +68,11 @@ const List = () => {
             manager,
             status,
             manager_phone,
-            faa_ident
+            faa_ident,
           } = airportInfo[key][0];
 
+          if (filteredAirportData.includes(city)) {
+          }
           airportData.push({
             facility_name,
             city,
@@ -104,46 +81,36 @@ const List = () => {
             manager,
             status,
             manager_phone,
-            faa_ident         
-           });
-           
+            faa_ident,
+          });
         }
       }
       setAirportsData(airportData);
-      
-      return { airportsData, res };
     };
-   
     getData();
-     
-  }, []);
-
-  
+  }, [apCodes]);
 
   return (
-    <Wrapper>
-      <Map>
-        <MyMap height={600} />
-      </Map>
-      <Section>
-        
-        {airportsData.map((airports) => (
-          // <Link to={`/InfoPage/${airports.faa_ident}`}>
-            <Card id={nanoid()}  onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}>
-              <h3>{airports.facility_name}</h3>
-              <p>
-                <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
-                {airports.state_full}
-              </p>
-              <p>
-                <i className="fa-solid fa-phone"></i> {airports.manager_phone}
-              </p>
-              {airports.status === "O" ? "Currently Open" : "Currently Closed"}
-            </Card>
-          // </Link>
-        ))}
-      </Section>
-    </Wrapper>
+    <Section>
+      {airportsData.map((airports) => (
+        <Card
+          ref={markerInfo[2] === airports.faa_ident ? refProp : null}
+          key={nanoid()} 
+          className={markerInfo[2] === airports.faa_ident ? "active" : ""}
+          onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}
+        >
+          <p>{airports.facility_name}</p>
+          <p>
+            <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
+            {airports.state_full}
+          </p>
+          <p>
+            <i className="fa-solid fa-phone"></i> {airports.manager_phone}
+          </p>
+          {airports.status === "O" ? "Currently Open" : "Currently Closed"}
+        </Card>
+      ))}
+    </Section>
   );
 };
 
