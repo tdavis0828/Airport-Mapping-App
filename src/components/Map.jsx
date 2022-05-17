@@ -1,10 +1,9 @@
 import { Map, Marker } from "pigeon-maps";
-import airports from "../airports.json";
 import { useState, useEffect, useRef } from "react";
 import { nanoid } from "nanoid";
 import styled from "styled-components";
 import List from "./List";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 const MapStyles = styled.div`
   width: 1400px;
@@ -30,60 +29,49 @@ const Input = styled.input`
   }
 `;
 
-const MyMap = () => {
+const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
   const scrollRef = useRef();
 
-  const [unfilteredAirports, setunfilteredAirports] = useState([]);
   const [filteredAirports, setFilteredAirports] = useState([]);
+  const [filteredMapData, setFilteredMapData] = useState([]);
   const [markerInfo, setMarkerInfo] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchValues, setSearchValues] = useState([]);
-
-  useEffect(() => {
-    const filterAirportInfo = () => {
-      const usAirports = airports.filter(
-        (airport) =>
-          airport.country.includes("United States") &&
-          airport.runway_length > 12000
-      );
-
-      let unfiltered = [];
-      let searchValuesArr = [];
-      for (const airports of usAirports) {
-        let unfilteredValues = [airports.lat, airports.lon, airports.code];
-        let searchValues = [...unfilteredValues, airports.city, airports.state];
-        searchValuesArr.push(searchValues);
-        unfiltered.push(unfilteredValues);
-      }
-      setSearchValues(searchValuesArr);
-      setunfilteredAirports(unfiltered);
-    };
-    filterAirportInfo();
-  }, []);
 
   useEffect(() => {
     let filtered = [];
-    for (const key of searchValues) {
+    for (const key of unfilteredAirports) {
       if (
-        key[4].toUpperCase().includes(searchTerm.toUpperCase()) ||
-        key[3].toUpperCase().includes(searchTerm.toUpperCase())
+        key.city.toUpperCase().includes(searchTerm.toUpperCase()) ||
+        key.state_full.toUpperCase().includes(searchTerm.toUpperCase())
       ) {
         filtered.push(key);
       }
     }
     setFilteredAirports(filtered);
-  }, [searchTerm]);
+
+    let filteredMap = [];
+
+    for (const index of unfilteredMapData) {
+      if (
+        index[3].toUpperCase().includes(searchTerm.toUpperCase()) ||
+        index[4].toUpperCase().includes(searchTerm.toUpperCase())
+      ) {
+        filteredMap.push(index);
+      }
+    }
+    setFilteredMapData(filteredMap);
+  }, [unfilteredAirports, unfilteredMapData, searchTerm]);
 
   return (
     <>
       <MapStyles>
         <Map defaultCenter={[33.9862, -98.4984]} defaultZoom={4.2}>
-          {filteredAirports === []
-            ? unfilteredAirports.map((value) => (
+          {filteredMapData === []
+            ? unfilteredMapData.map((value) => (
                 <Marker
                   key={nanoid()}
                   width={35}
-                  anchor={[parseFloat(value[0]), parseFloat(value[1])]}
+                  anchor={[parseFloat(value[1]), parseFloat(value[2])]}
                   onClick={() => {
                     setMarkerInfo(value);
                     setTimeout(() => {
@@ -92,11 +80,11 @@ const MyMap = () => {
                   }}
                 />
               ))
-            : filteredAirports.map((value) => (
+            : filteredMapData.map((value) => (
                 <Marker
                   key={nanoid()}
                   width={35}
-                  anchor={[parseFloat(value[0]), parseFloat(value[1])]}
+                  anchor={[parseFloat(value[1]), parseFloat(value[2])]}
                   onClick={() => {
                     setMarkerInfo(value);
                     setTimeout(() => {
@@ -116,7 +104,8 @@ const MyMap = () => {
       <List
         refProp={scrollRef}
         markerInfo={markerInfo}
-        airports={filteredAirports}
+        unfilteredAirports={unfilteredAirports}
+        filteredAirports={filteredAirports}
       />
     </>
   );
