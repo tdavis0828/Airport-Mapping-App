@@ -26,9 +26,28 @@ const MapStyles = styled.div`
     .pin {
       cursor: pointer;
     }
-    
-    
 `;
+
+const Button = styled.button`
+  background: #fff;
+  border-radius: 25px;
+  border: 1.5px solid rgba(0, 0, 0, 0.3);
+  font-family: 'Courier Prime';
+  text-align: center;
+  font-size: 1.1rem;
+  color: rgba(0,0,0,0.65);
+  padding: .25rem;
+  margin-right: 1rem;
+  width: 275px;
+  cursor: pointer;
+  transition: all 0.35s ease;
+
+  &:hover{
+    background: #000;
+    color: #fff;
+    transition: all 0.35s ease;
+  }
+`
 
 const Input = styled.input`
   width: 300px;
@@ -55,7 +74,6 @@ margin-right: 0px;
 
 const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
   const scrollRef = useRef();
-  const userLatLon = useRef([]);
 
   const [filteredAirports, setFilteredAirports] = useState([]);
   const [filteredMapData, setFilteredMapData] = useState([]);
@@ -69,12 +87,7 @@ const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
         setCenter([postion.coords.latitude, postion.coords.longitude])
         setZoom(7);
       })
-      console.log(userLatLon.current[0], userLatLon.current[1]);
     };
-
-    
-  
-
 
   useEffect(() => {
     let filtered = [];
@@ -145,12 +158,12 @@ const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
             </Overlay>
               ))}
         </Map>
-              <button
+              <Button
               onClick={() => {
                 getLocation();
               }}>
                 View Airports Near You
-              </button>
+              </Button>
         <Input
           type="text"
           onChange={(e) => setSearchTerm(e.target.value)}

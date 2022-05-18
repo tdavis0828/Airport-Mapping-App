@@ -49,11 +49,11 @@ const List = ({
               className={markerInfo[0] === airports.faa_ident ? "active" : ""}
               onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}
             >
-              <p>{airports.facility_name}</p>
+              <p><i className="fa-solid fa-building"></i>{" "}{airports.facility_name}</p>
               <p>
-                {airports.city}, {airports.state_full}
+              <i class="fa-solid fa-location-crosshairs"></i> {" "}{airports.city}, {airports.state_full}
               </p>
-              <p>{airports.manager_phone}</p>
+              <p><i className="fa-solid fa-phone"></i> {" "}{airports.manager_phone}</p>
               {airports.status === "O" ? "Currently Open" : "Currently Closed"}
             </Card>
           ))
@@ -64,11 +64,11 @@ const List = ({
               className={markerInfo[0] === airports.faa_ident ? "active" : ""}
               onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}
             >
-              <p>{airports.facility_name}</p>
+              <p><i className="fa-solid fa-building"></i>{" "}{airports.facility_name}</p>
               <p>
-                {airports.city}, {airports.state_full}
+              <i class="fa-solid fa-location-crosshairs"></i> {" "}{airports.city}, {airports.state_full}
               </p>
-              <p>{airports.manager_phone}</p>
+              <p> <i className="fa-solid fa-phone"></i>{" "}{airports.manager_phone}</p>
               {airports.status === "O" ? "Currently Open" : "Currently Closed"}
             </Card>
           ))}
