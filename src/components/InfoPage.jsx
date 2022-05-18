@@ -29,7 +29,6 @@ const Wrapper = styled.section`
 
         div {
             background-color: white;
-            max-height: 90%;
             max-width: 80%;
             padding: 2%;
             display: flex;
@@ -78,7 +77,7 @@ const Wrapper = styled.section`
     background-size: 100% 100%;
     min-height: 800px;
     max-width: 70%;
-    margin-top: 4%;
+    margin-top: 5rem;
     margin-left: 16%;
     box-shadow: 20px 15px 50px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 `;
@@ -87,8 +86,6 @@ const Button = styled.button`
     padding: 5px;
     border-radius: 4px;
     border: solid 1px;
-    // align-self: end;
-    // margin-left: 7%;
 `;
 
 const Text = styled.section`

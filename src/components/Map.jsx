@@ -1,10 +1,8 @@
 import React from 'react';
-import { Map, Marker, Overlay } from "pigeon-maps";
-import airports from "../airports.json";
+import { Map, Overlay } from "pigeon-maps";
 import { useState, useEffect, useRef  } from "react";
 import Pin from './IMGs/Airport_Pin.png';
 import List from "./List";
-import Rating from './rating'
 import { nanoid } from "nanoid";
 import styled, {createGlobalStyle}  from "styled-components";
 
@@ -50,110 +48,86 @@ const Input = styled.input`
 const Wrapper = styled.div`
 display: flex;
 justify-content: space-around;
-margin-top: 6%;
+margin-top: 7rem;
 margin-left: 0px;
 margin-right: 0px;
 `;
 
-const MyMap = () => {
+const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
   const scrollRef = useRef();
 
-  const [latLon, setLatLon] = useState([]);
-  const [lat, setLat] = useState(	38.500000);
-  const [lon, setLon] = useState(-98.000000);
-  const [unfilteredAirports, setunfilteredAirports] = useState([]);
   const [filteredAirports, setFilteredAirports] = useState([]);
+  const [filteredMapData, setFilteredMapData] = useState([]);
   const [markerInfo, setMarkerInfo] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchValues, setSearchValues] = useState([]);
-
-  useEffect(() => {
-    const filterAirportInfo = () => {
-      const usAirports = airports.filter(
-        (airport) =>
-          airport.country.includes("United States") &&
-          airport.runway_length > 12000
-      );
-
-      let unfiltered = [];
-      let searchValuesArr = [];
-      for (const airports of usAirports) {
-        let unfilteredValues = [airports.lat, airports.lon, airports.code];
-        let searchValues = [...unfilteredValues, airports.city, airports.state];
-        searchValuesArr.push(searchValues);
-        unfiltered.push(unfilteredValues);
-      }
-      setSearchValues(searchValuesArr);
-      setunfilteredAirports(unfiltered);
-      console.log(filteredAirports)
-    };
-    filterAirportInfo();
-  }, []);
 
   useEffect(() => {
     let filtered = [];
-    for (const key of searchValues) {
+    for (const key of unfilteredAirports) {
       if (
-        key[4].toUpperCase().includes(searchTerm.toUpperCase()) ||
-        key[3].toUpperCase().includes(searchTerm.toUpperCase())
+        key.city.toUpperCase().includes(searchTerm.toUpperCase()) ||
+        key.state_full.toUpperCase().includes(searchTerm.toUpperCase())
       ) {
         filtered.push(key);
       }
     }
     setFilteredAirports(filtered);
-  }, [searchTerm]);
 
+    let filteredMap = [];
 
-  const getLocation = () => {
-    navigator.geolocation.getCurrentPosition((postion) => {
-        setLat(postion.coords.latitude);
-        setLon(postion.coords.longitude);
-        
-    })
-  };  
+    for (const index of unfilteredMapData) {
+      if (
+        index[3].toUpperCase().includes(searchTerm.toUpperCase()) ||
+        index[4].toUpperCase().includes(searchTerm.toUpperCase())
+      ) {
+        filteredMap.push(index);
+      }
+    }
+    setFilteredMapData(filteredMap);
+  }, [unfilteredAirports, unfilteredMapData, searchTerm]);
 
   return (
     <>
     <Bod />
     <Wrapper>
       <MapStyles>
-      {/* <button onClick={getLocation}>Get Location</button> */}
         <Map defaultCenter={[33.9862, -98.4984]} defaultZoom={4.2}>
-          {filteredAirports === []
-            ? unfilteredAirports.map((value) => (
-                <Overlay
-                  key={nanoid()}
-                  width={5}
-                  offset={[40, 85]}
-                  anchor={[parseFloat(value[0]), parseFloat(value[1])]}
-               
-                >
-                <img className='pin' src={Pin} alt="pin" width={65} height={65} 
-                   onClick={() => {
-                    setMarkerInfo(value);
-                    setTimeout(() => {
-                      scrollRef.current.scrollIntoView();
-                    }, 0);
-                  }}
-                  />
-                </Overlay>
+          {filteredMapData === []
+            ? unfilteredMapData.map((value) => (
+              <Overlay
+              key={nanoid()}
+              width={5}
+              offset={[40, 85]}
+              anchor={[parseFloat(value[1]), parseFloat(value[2])]}
+           
+            >
+            <img className='pin' src={Pin} alt="pin" width={50} height={50} 
+               onClick={() => {
+                setMarkerInfo(value);
+                setTimeout(() => {
+                  scrollRef.current.scrollIntoView();
+                }, 0);
+              }}
+              />
+            </Overlay>
               ))
-            : filteredAirports.map((value) => (
-                <Overlay
-                  key={nanoid()}
-                  width={5}
-                  offset={[40, 70]}
-                  anchor={[parseFloat(value[0]), parseFloat(value[1])]}
-                >
-                  <img className='pin' src={Pin} alt="pin" width={65} height={65}
-                    onClick={() => {
-                      setMarkerInfo(value);
-                      setTimeout(() => {
-                        scrollRef.current.scrollIntoView();
-                      }, 0);
-                    }}
-                  />
-                </Overlay>
+            : filteredMapData.map((value) => (
+              <Overlay
+              key={nanoid()}
+              width={5}
+              offset={[25, 50]}
+              anchor={[parseFloat(value[1]), parseFloat(value[2])]}
+           
+            >
+            <img className='pin' src={Pin} alt="pin" width={50} height={50} 
+               onClick={() => {
+                setMarkerInfo(value);
+                setTimeout(() => {
+                  scrollRef.current.scrollIntoView();
+                }, 0);
+              }}
+              />
+            </Overlay>
               ))}
         </Map>
 
@@ -166,7 +140,8 @@ const MyMap = () => {
       <List
         refProp={scrollRef}
         markerInfo={markerInfo}
-        airports={filteredAirports}
+        unfilteredAirports={unfilteredAirports}
+        filteredAirports={filteredAirports}
       />
       </Wrapper>
     </>

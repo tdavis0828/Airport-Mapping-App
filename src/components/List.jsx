@@ -1,9 +1,6 @@
 import styled from "styled-components";
 import React from 'react';
-import airports from "../airports.json";
-import MyMap from "./Map";
-import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 import { nanoid } from "nanoid";
 
 const Section = styled.section`
@@ -33,83 +30,48 @@ const Card = styled.div`
   }
 `;
 
-const List = ({ refProp, markerInfo, airports }) => {
+const List = ({
+  refProp,
+  markerInfo,
+  filteredAirports,
+  unfilteredAirports,
+}) => {
+  console.log(unfilteredAirports);
+  console.log(filteredAirports);
   const navigate = useNavigate();
-  const [airportsData, setAirportsData] = useState([]);
-  const [apCodes, setApCodes] = useState([]);
-
-  useEffect(() => {
-    const getCodes = () => {
-      let codes = [];
-      for (const key of airports) {
-        codes.push(key[2]);
-      }
-      setApCodes(codes);
-    };
-    getCodes();
-  }, [airports]);
-
-  useEffect(() => {
-    const getData = async () => {
-      const res = await fetch(
-        `https://api.aviationapi.com/v1/airports?apt=${apCodes}`
-      );
-      const airportInfo = await res.json();
-      let airportData = [];
-      let filteredAirportData = [];
-
-      for (const key in airportInfo) {
-        if (airportInfo[key].length) {
-          const {
-            city,
-            facility_name,
-            county,
-            state_full,
-            manager,
-            status,
-            manager_phone,
-            faa_ident,
-          } = airportInfo[key][0];
-
-          if (filteredAirportData.includes(city)) {
-          }
-          airportData.push({
-            facility_name,
-            city,
-            county,
-            state_full,
-            manager,
-            status,
-            manager_phone,
-            faa_ident,
-          });
-        }
-      }
-      setAirportsData(airportData);
-    };
-    getData();
-  }, [apCodes]);
-
   return (
     <Section>
-      {airportsData.map((airports) => (
-        <Card
-          ref={markerInfo[2] === airports.faa_ident ? refProp : null}
-          key={nanoid()} 
-          className={markerInfo[2] === airports.faa_ident ? "active" : ""}
-          onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}
-        >
-          <p>{airports.facility_name}</p>
-          <p>
-            <i className="fa-solid fa-map-pin"></i> {airports.city},{" "}
-            {airports.state_full}
-          </p>
-          <p>
-            <i className="fa-solid fa-phone"></i> {airports.manager_phone}
-          </p>
-          {airports.status === "O" ? "Currently Open" : "Currently Closed"}
-        </Card>
-      ))}
+      {filteredAirports === []
+        ? unfilteredAirports.map((airports) => (
+            <Card
+              ref={markerInfo[0] === airports.faa_ident ? refProp : null}
+              key={nanoid()}
+              className={markerInfo[0] === airports.faa_ident ? "active" : ""}
+              onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}
+            >
+              <p>{airports.facility_name}</p>
+              <p>
+                {airports.city}, {airports.state_full}
+              </p>
+              <p>{airports.manager_phone}</p>
+              {airports.status === "O" ? "Currently Open" : "Currently Closed"}
+            </Card>
+          ))
+        : filteredAirports.map((airports) => (
+            <Card
+              ref={markerInfo[0] === airports.faa_ident ? refProp : null}
+              key={nanoid()}
+              className={markerInfo[0] === airports.faa_ident ? "active" : ""}
+              onClick={() => navigate(`/InfoPage/${airports.faa_ident}`)}
+            >
+              <p>{airports.facility_name}</p>
+              <p>
+                {airports.city}, {airports.state_full}
+              </p>
+              <p>{airports.manager_phone}</p>
+              {airports.status === "O" ? "Currently Open" : "Currently Closed"}
+            </Card>
+          ))}
     </Section>
   );
 };
