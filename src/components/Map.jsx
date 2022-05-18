@@ -55,11 +55,26 @@ margin-right: 0px;
 
 const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
   const scrollRef = useRef();
+  const userLatLon = useRef([]);
 
   const [filteredAirports, setFilteredAirports] = useState([]);
   const [filteredMapData, setFilteredMapData] = useState([]);
   const [markerInfo, setMarkerInfo] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [center, setCenter] = useState([33.9862, -98.4984]);
+  const [zoom, setZoom] = useState(4);
+
+    const getLocation = () => {
+      navigator.geolocation.getCurrentPosition((postion) => {
+        setCenter([postion.coords.latitude, postion.coords.longitude])
+        setZoom(7);
+      })
+      console.log(userLatLon.current[0], userLatLon.current[1]);
+    };
+
+    
+  
+
 
   useEffect(() => {
     let filtered = [];
@@ -91,7 +106,7 @@ const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
     <Bod />
     <Wrapper>
       <MapStyles>
-        <Map defaultCenter={[33.9862, -98.4984]} defaultZoom={4.2}>
+        <Map center={center} zoom={zoom}>
           {filteredMapData === []
             ? unfilteredMapData.map((value) => (
               <Overlay
@@ -130,7 +145,12 @@ const MyMap = ({ unfilteredAirports, unfilteredMapData }) => {
             </Overlay>
               ))}
         </Map>
-
+              <button
+              onClick={() => {
+                getLocation();
+              }}>
+                View Airports Near You
+              </button>
         <Input
           type="text"
           onChange={(e) => setSearchTerm(e.target.value)}

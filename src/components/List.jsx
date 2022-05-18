@@ -36,8 +36,8 @@ const List = ({
   filteredAirports,
   unfilteredAirports,
 }) => {
-  console.log(unfilteredAirports);
-  console.log(filteredAirports);
+  // console.log(unfilteredAirports);
+  // console.log(filteredAirports);
   const navigate = useNavigate();
   return (
     <Section>

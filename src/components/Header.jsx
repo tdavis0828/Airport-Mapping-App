@@ -26,7 +26,7 @@ const Header = () => {
     <Navbar>
       <p>AIRPORT</p>
       <p>
-        <i onClick={() => navigate('/')} class="fa fa-plane fa-2x"></i>
+        <i onClick={() => navigate('/')} className="fa fa-plane fa-2x"></i>
       </p>
 
       <p>FINDER</p>
