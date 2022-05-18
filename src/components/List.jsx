@@ -26,7 +26,7 @@ const Card = styled.div`
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   cursor: pointer;
   &.active {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.1);
   }
 `;
 

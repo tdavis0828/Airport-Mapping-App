@@ -15,7 +15,7 @@ const Home = () => {
     const usAirports = airportInfo.filter(
       (airport) =>
         airport.country.includes("United States") &&
-        airport.runway_length > 12000
+        airport.runway_length > 10000
     );
     let codes = [];
     let unfilteredMapData = [];
